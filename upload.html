@@ -82,20 +82,12 @@
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500"></textarea>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 mt-4">
-                <div id="videoUpload" class="p-6 rounded-xl border-2 border-dashed border-teal-400 text-center hover:bg-teal-50 cursor-pointer transition">
-                <i data-lucide="video" class="mx-auto mb-2 text-teal-600 w-8 h-8"></i>
-                <p class="text-teal-700 font-semibold">Click to select Video</p>
-                <input type="file" id="videoFile" accept="video/*" class="hidden" />
-                </div>
-
-                <!-- Upload audio section -->
-                <div id="audioUpload" class="p-6 rounded-xl border-2 border-dashed border-teal-400 text-center hover:bg-teal-50 cursor-pointer transition">
-                <i data-lucide="mic" class="mx-auto mb-2 text-teal-600 w-8 h-8"></i>
-                <p class="text-teal-700 font-semibold">Click to select Audio</p>
-                <input type="file" id="audioFile" accept="audio/*" class="hidden" />
-                </div>
+            <div class="p-6 rounded-xl border-2 border-dashed border-teal-400 text-center hover:bg-teal-50 transition">
+                <i data-lucide="upload" class="mx-auto mb-2 text-teal-600 w-8 h-8"></i>
+                <p class="text-teal-700 font-semibold">Select Video or Audio File</p>
+                <input type="file" id="mediaFile" accept="video/*,audio/*" class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-2" required />
             </div>
+
 
             <div id="messageBox" class="hidden p-3 rounded-lg text-center"></div>
 

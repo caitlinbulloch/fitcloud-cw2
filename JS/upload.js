@@ -55,30 +55,37 @@ form.addEventListener("submit", async (e) => {
   showMessage("Uploading to FitCloud...", "success");
 
   try {
-    const formData = new FormData();
-    formData.append("id", workoutId);
-    formData.append("userId", userId);
-    formData.append("workoutType", workoutType);
-    formData.append("duration", duration);
-    formData.append("description", description);
-    formData.append("File", mediaFile);
-    formData.append("FileName", mediaFile.name);
+    const payload = {
+        id: workoutId,
+        userId,
+        workoutType,
+        duration,
+        description,
+        FileName: mediaFile.name
+    };
 
+    const fileBase64 = await mediaFile.arrayBuffer().then(buf =>
+        btoa(String.fromCharCode(...new Uint8Array(buf)))
+    );
+    payload.File = fileBase64;
+
+    console.log("Payload ready:", payload);
 
     const response = await fetch(LOGIC_APP_URL, {
-      method: "POST",
-      body: formData,
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
     });
 
     if (response.ok) {
-      showMessage("Workout uploaded successfully!");
-      form.reset();
+        showMessage("Workout uploaded successfully!");
+        form.reset();
     } else {
-      showMessage("Upload failed — check console for details.", "error");
-      console.error(await response.text());
+        showMessage("Upload failed — check console for details.", "error");
+        console.error(await response.text());
     }
-  } catch (err) {
+    } catch (err) {
     console.error(err);
     showMessage("Error connecting to server.", "error");
-  }
+    }
 });
