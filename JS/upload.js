@@ -38,10 +38,12 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const workoutType = document.getElementById("workoutType").value.trim();
-  const duration = parseInt(document.getElementById("duration").value.trim());
-  const description = document.getElementById("description").value.trim();
-  const videoFile = videoFileInput.files[0];
-  const audioFile = audioFileInput.files[0];
+    const duration = parseInt(document.getElementById("duration").value.trim(), 10);
+    const description = document.getElementById("description").value.trim();
+    const videoFile = document.getElementById("videoFile").files[0];
+    const audioFile = document.getElementById("audioFile").files[0];
+    const mediaFile = videoFile || audioFile;
+
 
   if (!workoutType || !duration || (!videoFile && !audioFile)) {
     showMessage("Please complete all required fields.", "error");
@@ -49,7 +51,6 @@ form.addEventListener("submit", async (e) => {
   }
 
   const { workoutId, userId } = generateIds();
-  const mediaFile = videoFile || audioFile;
 
   showMessage("Uploading to FitCloud...", "success");
 
@@ -62,6 +63,7 @@ form.addEventListener("submit", async (e) => {
     formData.append("description", description);
     formData.append("File", mediaFile);
     formData.append("FileName", mediaFile.name);
+
 
     const response = await fetch(LOGIC_APP_URL, {
       method: "POST",
