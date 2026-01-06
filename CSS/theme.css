@@ -1,0 +1,62 @@
+/* === FitCloud Shared Theme === */
+:root {
+  --fitcloud-light: #2dd4bf;
+  --fitcloud-teal: #14b8a6;
+  --fitcloud-dark: #0f766e;
+  --fitcloud-bg: #f0fdfa;
+  --fitcloud-text: #0f172a;
+}
+
+body {
+  background: linear-gradient(to bottom right, var(--fitcloud-bg), #ffffff);
+  font-family: 'Segoe UI', sans-serif;
+  color: var(--fitcloud-text);
+  min-height: 100vh;
+}
+
+/* Navbar */
+nav.fitcloud-nav {
+  background-color: var(--fitcloud-dark);
+  color: white;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+nav.fitcloud-nav a {
+  color: #fff;
+  margin-left: 1.5rem;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+nav.fitcloud-nav a:hover,
+nav.fitcloud-nav a.active {
+  color: var(--fitcloud-light);
+}
+
+/* Card container */
+.fitcloud-card {
+  background-color: white;
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+}
+
+/* Buttons */
+.btn-fitcloud {
+  background-color: var(--fitcloud-dark);
+  color: white;
+  font-weight: 600;
+  padding: 0.6rem 1.5rem;
+  border-radius: 0.5rem;
+  transition: background 0.3s;
+}
+.btn-fitcloud:hover {
+  background-color: var(--fitcloud-teal);
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+}

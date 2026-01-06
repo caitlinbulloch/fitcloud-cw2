@@ -1,108 +1,66 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>FitCloud | Upload Workout</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FitCloud | Upload Workout</title>
+  <link rel="stylesheet" href="CSS/theme.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-            extend: {
-                colors: {
-                fitcloud: {
-                    light: '#2dd4bf',
-                    DEFAULT: '#14b8a6',
-                    dark: '#0f766e',
-                },
-                },
-            },
-            },
-        }
-    </script>
+<body class="min-h-screen flex flex-col">
 
-    <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Navbar -->
+  <nav class="fitcloud-nav flex justify-between items-center">
+    <a href="index.html" class="text-2xl font-bold">FitCloud</a>
+    <div class="text-lg">
+      <a href="index.html">Home</a>
+      <a href="upload.html" class="active">Upload</a>
+      <a href="view.html">View Workouts</a>
+    </div>
+  </nav>
 
-    <style>
-    :root {
-        --fitcloud-light: #e6fffa;
-        --fitcloud-teal: #14b8a6;
-        --fitcloud-dark: #0f766e;
-        }
-    body {
-        background: linear-gradient(to bottom right, var(--fitcloud-light), #ffffff);
-        font-family: 'Segoe UI', sans-serif;
-        }
-    .fitcloud-card {
-        background-color: white;
-        border-radius: 1.25rem;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        padding: 2rem;
-      }
-    </style>
-  </head>
+  <!-- Upload Form -->
+  <main class="flex-grow flex items-center justify-center py-10">
+    <div class="fitcloud-card w-full max-w-lg">
+      <h2 class="text-2xl font-bold mb-6 text-center text-[#0f766e]">Upload New Workout</h2>
 
-  <body class="min-h-screen flex flex-col">
-    <!-- Navigation -->
-    <nav class="bg-[#0f766e] text-white py-4 shadow-md">
-      <div class="container mx-auto flex justify-between items-center px-6">
-        <a href="index.html" class="text-2xl font-bold">FitCloud</a>
-        <div class="space-x-6 text-lg">
-          <a href="index.html" class="hover:text-blue-200">Home</a>
-          <a href="upload.html" class="underline font-semibold">Upload</a>
-          <a href="view.html" class="hover:text-blue-200">View Workouts</a>
+      <form id="uploadForm" class="space-y-5">
+        <div>
+          <label class="block text-gray-700 font-semibold mb-1">Workout Type</label>
+          <input type="text" id="workoutType" placeholder="e.g. HIIT, Yoga, Cardio"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500" required>
         </div>
-      </div>
-    </nav>
 
-    <!-- Main Upload Form -->
-    <main class="flex-grow flex items-center justify-center py-10">
-      <div class="fitcloud-card w-full max-w-lg">
-        <h2 class="text-2xl font-bold mb-6 text-center text-[#0f766e]">
-          Upload New Workout
-        </h2>
+        <div>
+          <label class="block text-gray-700 font-semibold mb-1">Duration (minutes)</label>
+          <input type="number" id="duration" min="1" placeholder="Enter duration"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500" required>
+        </div>
 
-        <form id="uploadForm" class="space-y-5">
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">Workout Type</label>
-                <input type="text" id="workoutType" placeholder="e.g. HIIT, Yoga, Cardio"
-                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500" required>
-            </div>
+        <div>
+          <label class="block text-gray-700 font-semibold mb-1">Description</label>
+          <textarea id="description" rows="3" placeholder="Brief description of the workout"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500"></textarea>
+        </div>
 
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">Duration (minutes)</label>
-                <input type="number" id="duration" min="1" placeholder="Enter duration"
-                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500" required>
-            </div>
+        <div class="p-6 rounded-xl border-2 border-dashed border-teal-400 text-center hover:bg-teal-50 transition">
+          <i data-lucide="upload" class="mx-auto mb-2 text-teal-600 w-8 h-8"></i>
+          <p class="text-teal-700 font-semibold">Select Video or Audio File</p>
+          <input type="file" id="mediaFile" accept="video/*,audio/*"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-2" required />
+        </div>
 
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">Description</label>
-                <textarea id="description" rows="3" placeholder="Brief description of the workout"
-                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500"></textarea>
-            </div>
+        <div id="messageBox" class="hidden p-3 rounded-lg text-center"></div>
 
-            <div class="p-6 rounded-xl border-2 border-dashed border-teal-400 text-center hover:bg-teal-50 transition">
-                <i data-lucide="upload" class="mx-auto mb-2 text-teal-600 w-8 h-8"></i>
-                <p class="text-teal-700 font-semibold">Select Video or Audio File</p>
-                <input type="file" id="mediaFile" accept="video/*,audio/*" class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-2" required />
-            </div>
+        <button type="submit" class="w-full bg-[#0f766e] text-white py-2 rounded-lg font-semibold hover:bg-[#14b8a6] transition">
+          Upload Workout
+        </button>
+      </form>
+    </div>
+  </main>
 
-
-            <div id="messageBox" class="hidden p-3 rounded-lg text-center"></div>
-
-            <button type="submit"
-                class="w-full bg-fitcloud-dark text-white py-2 rounded-lg font-semibold hover:bg-fitcloud-teal transition">
-                Upload Workout
-            </button>
-        </form>
-      </div>
-    </main>
-
-    <footer class="text-center py-4 text-gray-500 text-sm">
-      2026 FitCloud | Built with Microsoft Azure
-    </footer>
-
-    <script src="JS/upload.js"></script>
-  </body>
+  <footer>2026 FitCloud | Built with Microsoft Azure</footer>
+  <script src="JS/upload.js"></script>
+</body>
 </html>

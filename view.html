@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FitCloud | View Workouts</title>
+
+  <link rel="stylesheet" href="CSS/theme.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="JS/jquery-3.6.0.min.js"></script>
+  <script src="JS/view.js" defer></script>
+
+  <style>
+    #workoutGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+    }
+
+    .workout-card {
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 1.5rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .workout-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+    }
+    .workout-type {
+      color: #0f766e;
+      font-weight: 700;
+      font-size: 1.25rem;
+      margin-bottom: 0.25rem;
+    }
+    .workout-desc {
+      color: #334155;
+      font-size: 0.95rem;
+      text-align: center;
+      margin-bottom: 0.75rem;
+      min-height: 40px;
+    }
+    .workout-meta {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 0.75rem;
+    }
+    .workout-media {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      background-color: #f0fdfa;
+    }
+    .card-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: auto;
+    }
+    .btn-small {
+      background-color: #0f766e;
+      color: white;
+      border: none;
+      padding: 0.4rem 0.9rem;
+      font-size: 0.85rem;
+      border-radius: 6px;
+      transition: background-color 0.3s;
+    }
+    .btn-small:hover {
+      background-color: #14b8a6;
+    }
+  </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+
+  <!-- Navbar -->
+  <nav class="fitcloud-nav flex justify-between items-center">
+    <a href="index.html" class="text-2xl font-bold">FitCloud</a>
+    <div class="text-lg">
+      <a href="index.html">Home</a>
+      <a href="upload.html">Upload</a>
+      <a href="view.html" class="active">View Workouts</a>
+    </div>
+  </nav>
+
+  <!-- Search -->
+  <div class="max-w-md mx-auto mt-6">
+    <input id="searchInput" type="text" placeholder="Search workouts..."
+      class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500" />
+  </div>
+
+  <!-- Workouts grid -->
+  <main class="flex-grow">
+    <div id="workoutGrid">
+      <p class="text-center text-gray-500">Loading workouts...</p>
+    </div>
+  </main>
+
+  <footer>2026 FitCloud | Built with Microsoft Azure</footer>
+
+  <!-- Update Modal -->
+  <div id="updateModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+      <h3 class="text-xl font-bold text-[#0f766e] mb-4">Update Workout</h3>
+
+      <form id="updateForm" class="space-y-3">
+        <input type="hidden" id="updateId" />
+
+        <div>
+          <label class="block text-gray-700 font-semibold mb-1">Workout Type</label>
+          <input type="text" id="updateType" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-semibold mb-1">Duration (minutes)</label>
+          <input type="number" id="updateDuration" min="1" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-semibold mb-1">Description</label>
+          <textarea id="updateDescription" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2"></textarea>
+        </div>
+
+        <div class="flex justify-end space-x-3 mt-4">
+          <button type="button" id="cancelUpdate" class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-[#0f766e] text-white rounded-lg hover:bg-[#14b8a6]">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>
