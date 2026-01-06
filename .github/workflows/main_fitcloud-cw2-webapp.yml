@@ -1,4 +1,4 @@
-name: Build and deploy static FitCloud site to Azure Web App
+name: Deploy static FitCloud site to Azure Web App
 
 on:
   push:
@@ -7,16 +7,20 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Upload static content to Azure Web App
+      - name: Upload static content to Azure Web App (Linux)
         uses: azure/webapps-deploy@v2
         with:
           app-name: fitcloud-cw2-webapp
           slot-name: production
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
           package: .
+          enable-ftp: true
+          script: |
+            echo "Copying files to /home/site/wwwroot"
+            cp -r * /home/site/wwwroot/
