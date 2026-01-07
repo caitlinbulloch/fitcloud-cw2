@@ -90,9 +90,10 @@ function renderWorkouts(workouts) {
 
   const cards = workouts.map((w) => `
     <div class="workout-card">
-      <div class="workout-type">${w.workoutType || "Unknown Type"}</div>
-      <div class="workout-desc">${w.description || ""}</div>
-      <div class="workout-meta">Duration: ${w.duration || "N/A"} min</div>
+        <div class="workout-type">${w.workoutType || "Unknown Type"}</div>
+        ${w.translatedWorkoutType ? `<p class="text-sm text-teal-600 italic">(Spanish: ${w.translatedWorkoutType})</p>` : ""}
+        <div class="workout-desc">${w.description || ""}</div>
+        <div class="workout-meta">Duration: ${w.duration || "N/A"} min</div>
 
       ${
         w.mediaUrl && w.mediaUrl.endsWith(".mp4")
