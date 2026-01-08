@@ -92,11 +92,14 @@ function openUpdateModal(workout) {
 async function handleUpdate(e) {
   e.preventDefault();
   const id = $("#updateId").val();
-  const updatedData = {
+  const original = workouts.find(w => w.id === id);
+    const updatedData = {
     id,
     workoutType: $("#updateType").val(),
     duration: parseInt($("#updateDuration").val(), 10),
     description: $("#updateDescription").val(),
+    mediaUrl: original?.mediaUrl || "",
+    translatedWorkoutType: original?.translatedWorkoutType || "",
     isDeleted: false
   };
   try {
