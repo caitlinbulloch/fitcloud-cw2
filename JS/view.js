@@ -7,7 +7,7 @@ const UPDATE_API_URL = "https://prod-39.uksouth.logic.azure.com/workflows/bfa4c9
 // Azure AI Search details
 const SEARCH_SERVICE = "fitcloud-search-cw2";
 const SEARCH_INDEX = "fitcloud-search-cw2";
-const SEARCH_URL = "https://prod-63.uksouth.logic.azure.com:443/workflows/f76358b2114c409c9e2d117f2be3c587/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=sLYILTIDHgZqd5wLlV7aARLQCyWhE9qBzM0p5S-gI5Y";
+const SEARCH_URL = "https://prod-52.uksouth.logic.azure.com:443/workflows/250b8af8c0f349838dee5dfe8e76aade/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=kq2NDoW2B9fWvJLasB0u5DXc4iKw_2cI1hDqViIBxxs";
 
 // Get search key (stored locally for security)
 const SEARCH_KEY = localStorage.getItem("AZURE_SEARCH_KEY");
