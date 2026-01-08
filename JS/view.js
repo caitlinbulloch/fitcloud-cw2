@@ -19,32 +19,30 @@ $(document).ready(() => {
   $("#searchInput").on("input", async function () {
     const term = $(this).val().trim();
 
-    if (term.length === 0) {
-      fetchWorkouts();
-      return;
+    if (!term) {
+        fetchWorkouts();
+        return;
     }
 
     try {
-      const payload = { search: term };
-      console.log("Sending search:", payload);
+        const payload = { search: term };
+        console.log("🔍 Sending query:", payload);
 
-      const response = await fetch(SEARCH_URL, {
+        const response = await fetch(SEARCH_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "api-key": SEARCH_KEY
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
-      });
+        });
 
-      const results = await response.json();
-      console.log("🔍 Azure Search results:", results);
+        const data = await response.json();
+        console.log("✅ Search results:", data);
 
-      renderWorkouts(results.value);
+        renderWorkouts(data.value || []);
     } catch (err) {
-      console.error("Search error:", err);
+        console.error("Search error:", err);
     }
   });
+
 });
 
 // === Fetch workouts (default list) ===
