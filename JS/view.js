@@ -3,18 +3,36 @@
 // Logic App endpoints
 const GET_API_URL = "https://prod-63.uksouth.logic.azure.com:443/workflows/f76358b2114c409c9e2d117f2be3c587/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=sLYILTIDHgZqd5wLlV7aARLQCyWhE9qBzM0p5S-gI5Y";
 const UPDATE_API_URL = "https://prod-39.uksouth.logic.azure.com/workflows/bfa4c9f449fa439596756088518a140a/triggers/When_an_HTTP_request_is_received/paths/invoke/workouts/%7Bid%7D?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=jFgOG8CpnNYf4lHOe1DJul47oYgS8IkAQNJAhqPObBw";
+const SEARCH_URL = "https://fitcloud-search-cw2.search.windows.net/indexes/fitcloud-search-ai/docs/search?api-version=2024-07-01";
+const SEARCH_KEY = localStorage.getItem("AZURE_SEARCH_KEY");
 
 $(document).ready(() => {
   fetchWorkouts();
 
   // Search filter
-  $("#searchInput").on("input", function () {
-    const term = $(this).val().toLowerCase();
-    $(".workout-card").each(function () {
-      const match = $(this).text().toLowerCase().includes(term);
-      $(this).toggle(match);
-    });
+  $("#searchInput").on("input", async function () {
+    const term = $(this).val().trim();
+    if (term === "") {
+        fetchWorkouts(); // fallback to all
+        return;
+    }
+
+    try {
+        const response = await fetch(SEARCH_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "api-key": SEARCH_KEY
+        },
+        body: JSON.stringify({ search: term })
+        });
+        const result = await response.json();
+        renderWorkouts(result.value);
+    } catch (err) {
+        console.error("Search error:", err);
+    }
   });
+
 
   // Cancel modal
   $("#cancelUpdate").on("click", function () {
