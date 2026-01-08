@@ -4,50 +4,55 @@
 const GET_API_URL = "https://prod-63.uksouth.logic.azure.com:443/workflows/f76358b2114c409c9e2d117f2be3c587/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=sLYILTIDHgZqd5wLlV7aARLQCyWhE9qBzM0p5S-gI5Y";
 const UPDATE_API_URL = "https://prod-39.uksouth.logic.azure.com/workflows/bfa4c9f449fa439596756088518a140a/triggers/When_an_HTTP_request_is_received/paths/invoke/workouts/%7Bid%7D?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=jFgOG8CpnNYf4lHOe1DJul47oYgS8IkAQNJAhqPObBw";
 const SEARCH_URL = "https://prod-52.uksouth.logic.azure.com:443/workflows/250b8af8c0f349838dee5dfe8e76aade/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=kq2NDoW2B9fWvJLasB0u5DXc4iKw_2cI1hDqViIBxxs";
-const SEARCH_KEY = localStorage.getItem("AZURE_SEARCH_KEY");
 
 $(document).ready(() => {
   fetchWorkouts();
 
-  // Search filter
+  // === Search filter ===
   $("#searchInput").on("input", async function () {
     const term = $(this).val().trim();
 
     if (term.length === 0) {
-        fetchWorkouts(); // show all again
-        return;
+      fetchWorkouts();
+      return;
     }
 
     try {
-        console.log("Sending query payload:", { query: term });
-        const response = await fetch(SEARCH_URL, {
+      console.log("Sending query payload:", { query: term });
+
+      const response = await fetch(SEARCH_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: term })
-        });
+      });
 
-        if (!response.ok) throw new Error(await response.text());
+      if (!response.ok) throw new Error(await response.text());
+      const results = await response.json();
+      console.log("🔍 Search results:", results);
 
-        const results = await response.json();
-        console.log("🔍 Search results:", results);
+      const workouts = (results.value || []).map(item => ({
+        id: item.id,
+        workoutType: item.keyPhrases?.[0] || item.persons?.[0] || "Unknown",
+        description: item.organizations?.[0] || "",
+        duration: "N/A",
+        mediaUrl: "",
+        translatedWorkoutType: "",
+        isDeleted: false
+      }));
 
-        // Azure Search returns docs in "value"
-        const workouts = results.value || [];
-        renderWorkouts(workouts);
+      renderWorkouts(workouts);
     } catch (err) {
-        console.error("Search error:", err);
+      console.error("Search error:", err);
     }
   });
 
-
-
-  // Cancel modal
+  // === Cancel modal ===
   $("#cancelUpdate").on("click", function () {
     $("#updateModal").addClass("hidden").removeClass("flex");
     currentWorkout = null;
   });
 
-  // Handle update submit
+  // === Handle update submit ===
   $("#updateForm").on("submit", async function (e) {
     e.preventDefault();
     if (!currentWorkout) return;
@@ -84,7 +89,7 @@ $(document).ready(() => {
   });
 });
 
-// === Fetch workouts from Logic App ===
+// === Fetch workouts (from Cosmos DB) ===
 function fetchWorkouts() {
   $("#workoutGrid").html("<p class='text-center text-gray-500'>Fetching workouts...</p>");
 
@@ -115,10 +120,10 @@ function renderWorkouts(workouts) {
 
   const cards = workouts.map((w) => `
     <div class="workout-card">
-        <div class="workout-type">${w.workoutType || "Unknown Type"}</div>
-        ${w.translatedWorkoutType ? `<p class="text-sm text-teal-600 italic">(Spanish: ${w.translatedWorkoutType})</p>` : ""}
-        <div class="workout-desc">${w.description || ""}</div>
-        <div class="workout-meta">Duration: ${w.duration || "N/A"} min</div>
+      <div class="workout-type">${w.workoutType || "Unknown Type"}</div>
+      ${w.translatedWorkoutType ? `<p class="text-sm text-teal-600 italic">(Spanish: ${w.translatedWorkoutType})</p>` : ""}
+      <div class="workout-desc">${w.description || ""}</div>
+      <div class="workout-meta">Duration: ${w.duration || "N/A"} min</div>
 
       ${
         w.mediaUrl && w.mediaUrl.endsWith(".mp4")
@@ -141,12 +146,10 @@ function renderWorkouts(workouts) {
 // === Open Update Modal ===
 function openUpdateModal(workout) {
   currentWorkout = workout;
-
   $("#updateId").val(workout.id);
   $("#updateType").val(workout.workoutType);
   $("#updateDuration").val(workout.duration);
   $("#updateDescription").val(workout.description);
-
   $("#updateModal").removeClass("hidden").addClass("flex");
 }
 
@@ -154,10 +157,7 @@ function openUpdateModal(workout) {
 async function deleteWorkout(id) {
   if (!confirm("Are you sure you want to delete this workout?")) return;
 
-  const payload = {
-    id: id,
-    isDeleted: true
-  };
+  const payload = { id: id, isDeleted: true };
 
   try {
     const response = await fetch(UPDATE_API_URL, {
