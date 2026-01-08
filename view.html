@@ -17,68 +17,38 @@
       gap: 1.5rem;
       padding: 2rem;
     }
-
     .workout-card {
       background: #fff;
       border-radius: 1rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       padding: 1.5rem;
-      transition: transform 0.2s, box-shadow 0.2s;
       display: flex;
       flex-direction: column;
       align-items: center;
+      transition: transform 0.2s;
     }
-    .workout-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
-    }
-    .workout-type {
-      color: #0f766e;
-      font-weight: 700;
-      font-size: 1.25rem;
-      margin-bottom: 0.25rem;
-    }
-    .workout-desc {
-      color: #334155;
-      font-size: 0.95rem;
-      text-align: center;
-      margin-bottom: 0.75rem;
-      min-height: 40px;
-    }
-    .workout-meta {
-      font-size: 0.85rem;
-      color: #64748b;
-      margin-bottom: 0.75rem;
-    }
-    .workout-media {
-      width: 100%;
-      border-radius: 10px;
-      margin-bottom: 1rem;
-      background-color: #f0fdfa;
-    }
-    .card-actions {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: auto;
-    }
+    .workout-card:hover { transform: translateY(-4px); }
     .btn-small {
       background-color: #0f766e;
       color: white;
-      border: none;
       padding: 0.4rem 0.9rem;
       font-size: 0.85rem;
       border-radius: 6px;
+      margin: 0 4px;
       transition: background-color 0.3s;
     }
-    .btn-small:hover {
-      background-color: #14b8a6;
+    .btn-small:hover { background-color: #14b8a6; }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 2rem;
     }
   </style>
 </head>
 
 <body class="flex flex-col min-h-screen">
 
-  <!-- Navbar -->
   <nav class="fitcloud-nav flex justify-between items-center">
     <a href="index.html" class="text-2xl font-bold">FitCloud</a>
     <div class="text-lg">
@@ -89,18 +59,23 @@
   </nav>
 
   <!-- Search -->
-    <div class="max-w-md mx-auto mt-6 relative">
-        <label class="absolute -top-4 left-2 bg-white px-2 text-xs font-semibold text-[#0f766e] border border-[#0f766e] rounded-full shadow-sm">
-            Smart AI Search
-        </label>
-        <input id="searchInput" type="text" placeholder="Search workouts..."
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 pl-4" />
-    </div>
+  <div class="max-w-md mx-auto mt-6 relative">
+    <label class="absolute -top-4 left-2 bg-white px-2 text-xs font-semibold text-[#0f766e] border border-[#0f766e] rounded-full shadow-sm">
+      Smart AI Search
+    </label>
+    <input id="searchInput" type="text" placeholder="Search workouts..."
+      class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 pl-4" />
+  </div>
 
   <!-- Workouts grid -->
   <main class="flex-grow">
     <div id="workoutGrid">
       <p class="text-center text-gray-500">Loading workouts...</p>
+    </div>
+    <div class="pagination">
+      <button id="prevPage" class="btn-small">Previous</button>
+      <span id="pageInfo"></span>
+      <button id="nextPage" class="btn-small">Next</button>
     </div>
   </main>
 
@@ -110,25 +85,20 @@
   <div id="updateModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
       <h3 class="text-xl font-bold text-[#0f766e] mb-4">Update Workout</h3>
-
       <form id="updateForm" class="space-y-3">
         <input type="hidden" id="updateId" />
-
         <div>
           <label class="block text-gray-700 font-semibold mb-1">Workout Type</label>
           <input type="text" id="updateType" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
         </div>
-
         <div>
           <label class="block text-gray-700 font-semibold mb-1">Duration (minutes)</label>
           <input type="number" id="updateDuration" min="1" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
         </div>
-
         <div>
           <label class="block text-gray-700 font-semibold mb-1">Description</label>
           <textarea id="updateDescription" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2"></textarea>
         </div>
-
         <div class="flex justify-end space-x-3 mt-4">
           <button type="button" id="cancelUpdate" class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400">Cancel</button>
           <button type="submit" class="px-4 py-2 bg-[#0f766e] text-white rounded-lg hover:bg-[#14b8a6]">Save</button>
@@ -136,8 +106,5 @@
       </form>
     </div>
   </div>
-
 </body>
 </html>
-
-

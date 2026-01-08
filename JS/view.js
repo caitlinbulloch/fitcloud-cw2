@@ -1,86 +1,130 @@
-// === FitCloud View Page with Azure AI Search ===
-
-// Logic App endpoints (for normal CRUD)
+// === FitCloud View Page ===
 const GET_API_URL = "https://prod-63.uksouth.logic.azure.com:443/workflows/f76358b2114c409c9e2d117f2be3c587/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=sLYILTIDHgZqd5wLlV7aARLQCyWhE9qBzM0p5S-gI5Y";
 const UPDATE_API_URL = "https://prod-39.uksouth.logic.azure.com/workflows/bfa4c9f449fa439596756088518a140a/triggers/When_an_HTTP_request_is_received/paths/invoke/workouts/%7Bid%7D?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=jFgOG8CpnNYf4lHOe1DJul47oYgS8IkAQNJAhqPObBw";
 
-// Azure AI Search details
-const SEARCH_SERVICE = "fitcloud-search-cw2";
-const SEARCH_INDEX = "fitcloud-search-cw2";
-const SEARCH_URL = "https://prod-52.uksouth.logic.azure.com:443/workflows/250b8af8c0f349838dee5dfe8e76aade/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=kq2NDoW2B9fWvJLasB0u5DXc4iKw_2cI1hDqViIBxxs";
+let workouts = [];
+let currentPage = 1;
+const itemsPerPage = 6;
 
-// Get search key (stored locally for security)
-const SEARCH_KEY = localStorage.getItem("AZURE_SEARCH_KEY");
-
-// Load workouts when page starts
 $(document).ready(() => {
   fetchWorkouts();
 
-  $("#searchInput").on("input", async function () {
-    const term = $(this).val().trim();
-
-    if (!term) {
-        fetchWorkouts();
-        return;
-    }
-
-    try {
-        const payload = { search: term };
-        console.log("🔍 Sending query:", payload);
-
-        const response = await fetch(SEARCH_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-        });
-
-        const data = await response.json();
-        console.log("✅ Search results:", data);
-
-        renderWorkouts(data.value || []);
-    } catch (err) {
-        console.error("Search error:", err);
-    }
+  $("#searchInput").on("input", function () {
+    const term = $(this).val().toLowerCase();
+    const filtered = workouts.filter(w =>
+      w.workoutType?.toLowerCase().includes(term) ||
+      w.description?.toLowerCase().includes(term)
+    );
+    renderWorkouts(filtered);
   });
 
+  $("#prevPage").on("click", () => {
+    if (currentPage > 1) { currentPage--; paginate(); }
+  });
+  $("#nextPage").on("click", () => {
+    const totalPages = Math.ceil(workouts.length / itemsPerPage);
+    if (currentPage < totalPages) { currentPage++; paginate(); }
+  });
+
+  $("#cancelUpdate").on("click", () => $("#updateModal").addClass("hidden"));
+  $("#updateForm").on("submit", handleUpdate);
 });
 
-// === Fetch workouts (default list) ===
 function fetchWorkouts() {
   $("#workoutGrid").html("<p class='text-center text-gray-500'>Fetching workouts...</p>");
   $.ajax({
     url: GET_API_URL,
     type: "GET",
     dataType: "json",
-    success: (data) => renderWorkouts(data.filter(w => !w.isDeleted)),
-    error: (err) => {
+    success: data => {
+      workouts = data.filter(w => !w.isDeleted);
+      paginate();
+    },
+    error: err => {
       console.error("Error fetching workouts:", err);
       $("#workoutGrid").html("<p class='text-center text-red-600'>Error loading workouts.</p>");
     }
   });
 }
 
-// === Render workouts as cards ===
-function renderWorkouts(workouts) {
-  if (!workouts || workouts.length === 0) {
+function paginate() {
+  const totalPages = Math.ceil(workouts.length / itemsPerPage);
+  const start = (currentPage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  renderWorkouts(workouts.slice(start, end));
+  $("#pageInfo").text(`Page ${currentPage} of ${totalPages}`);
+}
+
+function renderWorkouts(list) {
+  if (!list.length) {
     $("#workoutGrid").html("<p class='text-center text-gray-500'>No workouts found.</p>");
     return;
   }
 
-  const cards = workouts.map(w => `
+  const cards = list.map(w => `
     <div class="workout-card">
-      <div class="workout-type">${w.workoutType || w.keyPhrases?.[0] || "Unknown Type"}</div>
+      <div class="workout-type">${w.workoutType || "Unknown"}</div>
       <div class="workout-desc">${w.description || ""}</div>
       <div class="workout-meta">Duration: ${w.duration || "N/A"} min</div>
-      ${
-        w.mediaUrl?.endsWith(".mp4")
-          ? `<video src="${w.mediaUrl}" controls class="workout-media"></video>`
-          : w.mediaUrl
-          ? `<audio src="${w.mediaUrl}" controls class="workout-media"></audio>`
-          : `<div class="text-gray-400 italic mb-2">No media available</div>`
-      }
+      ${w.mediaUrl?.endsWith(".mp4")
+        ? `<video src="${w.mediaUrl}" controls class="workout-media"></video>`
+        : w.mediaUrl
+        ? `<audio src="${w.mediaUrl}" controls class="workout-media"></audio>`
+        : `<div class='text-gray-400 italic mb-2'>No media available</div>`}
+      <div class="card-actions">
+        <button class="btn-small" onclick='openUpdateModal(${JSON.stringify(w)})'>Update</button>
+        <button class="btn-small bg-[#14b8a6]" onclick='deleteWorkout("${w.id}")'>Delete</button>
+      </div>
     </div>
   `).join("");
 
   $("#workoutGrid").html(cards);
+}
+
+function openUpdateModal(workout) {
+  $("#updateId").val(workout.id);
+  $("#updateType").val(workout.workoutType);
+  $("#updateDuration").val(workout.duration);
+  $("#updateDescription").val(workout.description);
+  $("#updateModal").removeClass("hidden").addClass("flex");
+}
+
+async function handleUpdate(e) {
+  e.preventDefault();
+  const id = $("#updateId").val();
+  const updatedData = {
+    id,
+    workoutType: $("#updateType").val(),
+    duration: parseInt($("#updateDuration").val(), 10),
+    description: $("#updateDescription").val(),
+    isDeleted: false
+  };
+  try {
+    const res = await fetch(UPDATE_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedData)
+    });
+    if (res.ok) {
+      alert("Workout updated!");
+      $("#updateModal").addClass("hidden");
+      fetchWorkouts();
+    } else alert("Failed to update workout");
+  } catch (err) { console.error(err); }
+}
+
+async function deleteWorkout(id) {
+  if (!confirm("Delete this workout?")) return;
+  const payload = { id, isDeleted: true };
+  try {
+    const res = await fetch(UPDATE_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      alert("Workout deleted");
+      fetchWorkouts();
+    } else alert("Delete failed");
+  } catch (err) { console.error(err); }
 }
