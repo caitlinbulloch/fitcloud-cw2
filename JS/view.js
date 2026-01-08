@@ -19,6 +19,7 @@ $(document).ready(() => {
     }
 
     try {
+        console.log("Sending query payload:", { query: term });
         const response = await fetch(SEARCH_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
